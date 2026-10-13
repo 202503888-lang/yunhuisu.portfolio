@@ -1,0 +1,1149 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>채널 인텔리전스</title>
+<meta name="description" content="경제·지식 유튜브 채널 5종의 참여율, 댓글 집중도, 생산성 지표를 비교하는 대시보드">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap">
+<style>
+  /* ============ Tokens ============ */
+  :root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --surface-2: #F3F4F6;
+    --border: #E5E7EB;
+    --border-strong: #D1D5DB;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --text-tertiary: #9CA3AF;
+    --shadow-card: 0 1px 3px rgba(17,24,39,.06), 0 1px 2px rgba(17,24,39,.04);
+    --shadow-hover: 0 4px 14px rgba(17,24,39,.08), 0 1px 3px rgba(17,24,39,.06);
+
+    /* brand accents — fill = vivid brand hue (charts/badges), ink = darkened for text/dots on light */
+    --mg-fill: #3182F6;   --mg-ink: #1D4ED8;   --mg-soft: #EAF2FF;
+    --eo-fill: #00E676;   --eo-ink: #00875A;   --eo-soft: #E6FBF1;
+    --sf-fill: #3B5FCC;   --sf-ink: #1E3A8A;   --sf-soft: #EAEEFB;
+    --sk-fill: #F59E0B;   --sk-ink: #B45309;   --sk-soft: #FEF3E2;
+    --f14-fill:#EC4899;   --f14-ink:#BE185D;   --f14-soft: #FCE9F1;
+
+    --good: #059669;
+    --grid-line: #EEF0F3;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B0C0F;
+      --surface: #17191E;
+      --surface-2: #1E2128;
+      --border: #2A2D35;
+      --border-strong: #3A3E48;
+      --text-primary: #F3F4F6;
+      --text-secondary: #9CA3AF;
+      --text-tertiary: #6B7280;
+      --shadow-card: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+      --shadow-hover: 0 6px 20px rgba(0,0,0,.45);
+
+      --mg-fill: #4C8DFF;  --mg-ink: #7FADFF;  --mg-soft: #16233F;
+      --eo-fill: #2BE88A;  --eo-ink: #4EE39C;  --eo-soft: #0F2A20;
+      --sf-fill: #6E86E0;  --sf-ink: #8FA3F0;  --sf-soft: #1B2140;
+      --sk-fill: #F5A623;  --sk-ink: #FBBF4B;  --sk-soft: #2E2210;
+      --f14-fill:#F472B6;  --f14-ink:#F79ACB;  --f14-soft: #331A26;
+
+      --good: #34D399;
+      --grid-line: #24272F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B0C0F; --surface: #17191E; --surface-2: #1E2128;
+    --border: #2A2D35; --border-strong: #3A3E48;
+    --text-primary: #F3F4F6; --text-secondary: #9CA3AF; --text-tertiary: #6B7280;
+    --shadow-card: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+    --shadow-hover: 0 6px 20px rgba(0,0,0,.45);
+    --mg-fill: #4C8DFF; --mg-ink: #7FADFF; --mg-soft: #16233F;
+    --eo-fill: #2BE88A; --eo-ink: #4EE39C; --eo-soft: #0F2A20;
+    --sf-fill: #6E86E0; --sf-ink: #8FA3F0; --sf-soft: #1B2140;
+    --sk-fill: #F5A623; --sk-ink: #FBBF4B; --sk-soft: #2E2210;
+    --f14-fill:#F472B6; --f14-ink:#F79ACB; --f14-soft: #331A26;
+    --good: #34D399; --grid-line: #24272F;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: auto; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    font-size: 14.5px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1, h2, h3 { font-family: 'IBM Plex Sans KR', 'Noto Sans KR', sans-serif; text-wrap: balance; margin: 0; }
+  .num { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  a { color: inherit; }
+
+  /* ============ Header ============ */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--text-secondary); margin-bottom: 14px;
+  }
+  .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--mg-fill); display: inline-block; }
+  header h1 { font-size: clamp(24px, 4vw, 32px); font-weight: 700; letter-spacing: -.01em; }
+  header p.sub { margin: 10px 0 0; color: var(--text-secondary); font-size: 15px; max-width: 640px; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 22px; padding-top: 20px;
+    border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-tertiary);
+  }
+  .meta-row span { display: flex; align-items: center; gap: 6px; }
+  .meta-row svg { width: 14px; height: 14px; opacity: .8; }
+
+  /* ============ Channel tabs ============ */
+  .channel-tabs {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+    display: flex; gap: 8px; overflow-x: auto;
+    padding: 12px 20px; margin: 28px -20px 0;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .channel-tabs::-webkit-scrollbar { display: none; }
+  .tab-pill {
+    display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+    padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); font-size: 12.5px; font-weight: 600; color: var(--text-secondary);
+    text-decoration: none; white-space: nowrap; transition: border-color .15s ease, color .15s ease;
+  }
+  .tab-pill:hover, .tab-pill:focus-visible { border-color: var(--text-primary); color: var(--text-primary); }
+  .tab-pill.active { border-color: var(--text-primary); color: var(--text-primary); background: var(--surface-2); }
+  .tab-num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 700;
+    color: var(--text-tertiary); flex-shrink: 0;
+  }
+
+  /* ============ Sections ============ */
+  section { margin-top: 40px; }
+  section[id^="ch"] { scroll-margin-top: 72px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .section-head h2 { font-size: 18px; font-weight: 700; }
+  .section-head .hint { font-size: 12.5px; color: var(--text-tertiary); }
+  .chapter-tag {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700;
+    color: var(--text-tertiary); letter-spacing: .05em; margin-right: 9px; vertical-align: middle;
+  }
+
+  /* ============ KPI cards ============ */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .kpi-card {
+    position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: var(--shadow-card); padding: 18px 18px 16px;
+    display: flex; flex-direction: column; gap: 10px; cursor: default;
+  }
+  .kpi-card:focus-visible { outline: 2px solid var(--mg-fill); outline-offset: 2px; }
+  .kpi-top { display: flex; align-items: center; justify-content: space-between; }
+  .kpi-label { font-size: 12.5px; color: var(--text-secondary); font-weight: 500; }
+  .kpi-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .kpi-icon svg { width: 16px; height: 16px; }
+  .kpi-value { font-size: 26px; font-weight: 700; letter-spacing: -.01em; }
+  .kpi-value .unit { font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-left: 2px; }
+  .kpi-foot { font-size: 12px; color: var(--text-tertiary); display: flex; align-items: center; gap: 5px; }
+  .kpi-hint { font-size: 11px; color: var(--mg-ink); display: flex; align-items: center; gap: 4px; }
+  .kpi-hint svg { width: 12px; height: 12px; }
+  .kpi-tooltip {
+    position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 30;
+    background: var(--text-primary); color: var(--surface);
+    padding: 11px 13px; border-radius: 9px; font-size: 11.5px; line-height: 1.55; font-weight: 400;
+    box-shadow: var(--shadow-hover);
+    opacity: 0; transform: translateY(-4px); pointer-events: none;
+    transition: opacity .15s ease, transform .15s ease;
+  }
+  .kpi-tooltip strong { color: var(--surface); font-weight: 700; }
+  .kpi-card:hover .kpi-tooltip, .kpi-card:focus-visible .kpi-tooltip, .kpi-card:focus-within .kpi-tooltip { opacity: 1; transform: translateY(0); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ============ Chart cards ============ */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: var(--shadow-card); padding: 20px 22px 18px;
+  }
+  .card-head h3 { font-size: 15px; font-weight: 700; }
+  .card-head p { margin: 4px 0 0; font-size: 12.5px; color: var(--text-secondary); }
+  .split-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 16px; }
+  .split-2 .mini-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+  .chart-box { position: relative; }
+  .chart-box.h-220 { height: 220px; }
+  .chart-box.h-260 { height: 260px; }
+  .chart-box.h-320 { height: 320px; }
+
+  .legend-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .legend-item .dot { width: 8px; height: 8px; }
+
+  /* ============ Table ============ */
+  details.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-card); padding: 4px 22px; }
+  details.table-card summary { cursor: pointer; padding: 16px 0; font-weight: 700; font-size: 15px; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+  details.table-card summary::-webkit-details-marker { display: none; }
+  details.table-card summary .chev { transition: transform .15s ease; color: var(--text-tertiary); }
+  details.table-card[open] summary .chev { transform: rotate(180deg); }
+  .table-scroll { overflow-x: auto; padding-bottom: 18px; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  th, td { text-align: right; padding: 9px 12px; font-size: 13px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--text-secondary); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.channel-cell { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  td.best { color: var(--good); font-weight: 700; }
+
+  /* ============ Insights ============ */
+  .insight-list { display: flex; flex-direction: column; gap: 12px; }
+  .insight-item { display: flex; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-card); padding: 18px 20px; }
+  .insight-num { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 13px; color: var(--surface); background: var(--text-primary); width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .insight-item h4 { margin: 0 0 5px; font-size: 14.5px; font-weight: 700; font-family: 'IBM Plex Sans KR', sans-serif; }
+  .insight-item p { margin: 0; font-size: 13.5px; color: var(--text-secondary); }
+  .insight-item strong { color: var(--text-primary); }
+
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .action-card { border-radius: 12px; padding: 18px 20px; border: 1px solid var(--border); background: var(--surface-2); }
+  .action-card h4 { margin: 0 0 6px; font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+  .action-card h4 svg { width: 15px; height: 15px; color: var(--mg-ink); }
+  .action-card p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+
+  /* ============ Notice banner ============ */
+  .notice-banner {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--surface-2); border: 1px solid var(--good); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-primary);
+  }
+  .notice-banner svg { width: 18px; height: 18px; color: var(--good); flex-shrink: 0; margin-top: 1px; }
+  .notice-banner strong { font-weight: 700; }
+
+  /* ============ Channel cards ============ */
+  .channel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .channel-card {
+    background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent);
+    border-radius: 12px; box-shadow: var(--shadow-card); padding: 20px 20px 18px;
+    display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 76px;
+  }
+  .cc-stats { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11.5px; color: var(--text-tertiary); }
+  .cc-stats b { font-family: 'IBM Plex Mono', monospace; color: var(--text-primary); font-weight: 600; }
+  .cc-head { display: flex; align-items: flex-start; gap: 10px; }
+  .cc-head .dot { width: 10px; height: 10px; margin-top: 6px; background: var(--accent); }
+  .cc-head h3 { font-size: 15.5px; font-weight: 700; margin: 0; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .cc-en { font-size: 11px; font-weight: 500; color: var(--text-tertiary); font-family: 'IBM Plex Mono', monospace; }
+  .cc-format { display: block; font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+  .cc-desc { font-size: 12.5px; color: var(--text-secondary); margin: 0; }
+  .cc-video { background: var(--accent-soft); border-radius: 9px; padding: 12px 14px; }
+  .cc-video-label { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent-ink); }
+  .cc-video h4 { font-size: 13px; font-weight: 700; margin: 6px 0 4px; line-height: 1.45; color: var(--text-primary); }
+  .cc-video-desc { font-size: 12px; color: var(--text-secondary); margin: 0; }
+  .cc-quotes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .cc-quotes li { font-size: 12px; color: var(--text-secondary); padding-left: 11px; border-left: 2px solid var(--border-strong); font-style: italic; }
+  .cc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cc-tags span { font-size: 11px; font-weight: 600; color: var(--accent-ink); background: var(--accent-soft); padding: 3px 9px; border-radius: 999px; }
+  .cc-cta {
+    margin-top: auto; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 10px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; text-decoration: none;
+  }
+  .cc-cta.link { background: var(--accent); color: #fff; }
+  .cc-cta.link:hover { filter: brightness(1.08); }
+  .cc-cta svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* ============ Deep-dive (20-factor) ============ */
+  .deepdive-note { font-size: 12.5px; color: var(--text-secondary); margin: -4px 0 16px; max-width: 860px; }
+  .deepdive-list { display: flex; flex-direction: column; gap: 12px; }
+  .deepdive-card {
+    background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent);
+    border-radius: 12px; box-shadow: var(--shadow-card); overflow: hidden;
+  }
+  .deepdive-card summary {
+    cursor: pointer; list-style: none; padding: 16px 20px; display: flex; align-items: center; gap: 10px;
+    font-family: 'IBM Plex Sans KR', sans-serif; font-weight: 700; font-size: 15px;
+  }
+  .deepdive-card summary::-webkit-details-marker { display: none; }
+  .deepdive-card summary .cc-en { font-weight: 500; }
+  .deepdive-card summary .chev { margin-left: auto; transition: transform .15s ease; color: var(--text-tertiary); flex-shrink: 0; }
+  .deepdive-card[open] summary .chev { transform: rotate(180deg); }
+  .deepdive-body { padding: 4px 20px 20px; border-top: 1px solid var(--border); }
+  .deepdive-area { margin-top: 18px; }
+  .deepdive-area h4 {
+    font-size: 12px; font-weight: 700; color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: .04em; margin: 0 0 10px;
+  }
+  .deepdive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .deepdive-field { background: var(--surface-2); border-radius: 9px; padding: 10px 12px; }
+  .deepdive-field .k { font-size: 11px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 3px; }
+  .deepdive-field .v { font-size: 12.5px; color: var(--text-primary); line-height: 1.55; }
+
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--text-tertiary); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  /* ============ Responsive ============ */
+  @media (max-width: 860px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2, .split-2, .action-grid, .deepdive-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .wrap { padding: 28px 16px 48px; }
+    .channel-tabs { margin: 24px -16px 0; padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Content Intelligence Report</div>
+    <h1>경제·지식 유튜브 채널 5종 비교 분석</h1>
+    <p class="sub">머니그라피, EO, 삼프로TV, 슈카월드, 14F — 규모가 아닌 <strong>시청자 반응 구조</strong>로 다시 읽는 뉴미디어 지형도.</p>
+    <div class="meta-row">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg>분석 기간: 최근 90일 업로드 기준</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>대상 채널 5개</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>지표 6종 · 시각화 7종</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>대표 영상 5편 심층 분석</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>5개 영역 · 20요소 프레임워크</span>
+    </div>
+  </header>
+
+  <nav class="channel-tabs" aria-label="섹션 바로가기">
+    <a href="#ch01" class="tab-pill"><span class="tab-num">01</span>지표 요약</a>
+    <a href="#ch02" class="tab-pill"><span class="tab-num">02</span>채널 규모</a>
+    <a href="#ch03" class="tab-pill"><span class="tab-num">03</span>반응률·댓글</a>
+    <a href="#ch04" class="tab-pill"><span class="tab-num">04</span>길이·조회·댓글</a>
+    <a href="#ch05" class="tab-pill"><span class="tab-num">05</span>대표 영상</a>
+    <a href="#ch06" class="tab-pill"><span class="tab-num">06</span>생산성·효율</a>
+    <a href="#ch07" class="tab-pill"><span class="tab-num">07</span>20요소 진단</a>
+  </nav>
+
+  <!-- ===== KPI Banner ===== -->
+  <section id="ch01" aria-label="핵심 지표 요약">
+    <div class="section-head">
+      <h2><span class="chapter-tag">CH.01</span>핵심 지표 요약</h2>
+      <span class="hint">카드에 마우스를 올리면 분석이 나타납니다</span>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card" tabindex="0">
+        <div class="kpi-top">
+          <span class="kpi-label">전체 평균 반응률</span>
+          <span class="kpi-icon" style="background:var(--mg-soft); color:var(--mg-ink);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </span>
+        </div>
+        <div class="kpi-value"><span class="num">2.65</span><span class="unit">%</span></div>
+        <div class="kpi-foot">5개 채널 Engagement Rate 평균</div>
+        <div class="kpi-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          분석 보기
+        </div>
+        <div class="kpi-tooltip">5개 채널 평균 반응률. 슈카월드·머니그라피·EO 등 오리지널 기획형 채널이 평균을 끌어올리고, <strong>삼프로TV의 다작 구조</strong>가 평균을 낮추는 요인으로 작용한다.</div>
+      </div>
+
+      <div class="kpi-card" tabindex="0">
+        <div class="kpi-top">
+          <span class="kpi-label">최고 반응률 채널</span>
+          <span class="kpi-icon" style="background:var(--mg-soft); color:var(--mg-ink);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </span>
+        </div>
+        <div class="kpi-value"><span class="num">3.82</span><span class="unit">%</span></div>
+        <div class="kpi-foot"><span class="dot" style="background:var(--mg-fill)"></span>머니그라피</div>
+        <div class="kpi-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          분석 보기
+        </div>
+        <div class="kpi-tooltip">조회수 대비 좋아요·댓글 비율 1위. 브랜드 홍보가 아닌 <strong>소비 문화 공감대</strong>를 자극해, 토스의 브랜디드 미디어임에도 팬덤화에 성공했다.</div>
+      </div>
+
+      <div class="kpi-card" tabindex="0">
+        <div class="kpi-top">
+          <span class="kpi-label">최고 댓글 집중도</span>
+          <span class="kpi-icon" style="background:var(--mg-soft); color:var(--mg-ink);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </span>
+        </div>
+        <div class="kpi-value"><span class="num">8.54</span><span class="unit">개/천회</span></div>
+        <div class="kpi-foot"><span class="dot" style="background:var(--mg-fill)"></span>머니그라피</div>
+        <div class="kpi-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          분석 보기
+        </div>
+        <div class="kpi-tooltip">조회수 1,000회당 8.5개 이상의 댓글이 달린다. 시청자가 자신의 경험을 댓글창에 남기는 <strong>공론장 역할</strong>을 채널이 수행하고 있음을 보여준다.</div>
+      </div>
+
+      <div class="kpi-card" tabindex="0">
+        <div class="kpi-top">
+          <span class="kpi-label">최다 업로드 채널</span>
+          <span class="kpi-icon" style="background:var(--sf-soft); color:var(--sf-ink);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </span>
+        </div>
+        <div class="kpi-value"><span class="num">145</span><span class="unit">편/월</span></div>
+        <div class="kpi-foot"><span class="dot" style="background:var(--sf-fill)"></span>삼프로TV</div>
+        <div class="kpi-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          분석 보기
+        </div>
+        <div class="kpi-tooltip">압도적 물량 공세지만 <strong>개별 영상 반응률·분당 효율은 5개 채널 중 최저</strong>. 리소스 분산이 시청자 집중도를 떨어뜨리는 대표 사례다.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Chart 1 : Scale ===== -->
+  <section id="ch02">
+    <div class="section-head">
+      <h2><span class="chapter-tag">CH.02</span>채널 규모 비교</h2>
+      <span class="hint">구독자 수 · 최근 30개 영상 평균 조회수</span>
+    </div>
+    <div class="card">
+      <div class="split-2">
+        <div>
+          <div class="mini-title">구독자 수 (만 명)</div>
+          <div class="chart-box h-260"><canvas id="chartSubs"></canvas></div>
+        </div>
+        <div>
+          <div class="mini-title">평균 조회수 (만 회)</div>
+          <div class="chart-box h-260"><canvas id="chartViews"></canvas></div>
+        </div>
+      </div>
+      <p style="margin:16px 0 0; font-size:12.5px; color:var(--text-secondary);">구독자 순위와 조회수 순위가 엇갈리는 지점이 핵심이다 — <strong style="color:var(--text-primary)">삼프로TV는 구독자 2위지만 평균 조회수는 최하위</strong>로, 규모가 곧 시청 전환을 뜻하지 않는다.</p>
+    </div>
+  </section>
+
+  <!-- ===== Chart 2 : Engagement ===== -->
+  <section id="ch03">
+    <div class="section-head">
+      <h2><span class="chapter-tag">CH.03</span>시청자 반응률 vs 댓글 집중도</h2>
+      <span class="hint">조회수 대비 실제 반응 강도</span>
+    </div>
+    <div class="card">
+      <div class="split-2">
+        <div>
+          <div class="mini-title">Engagement Rate (%)</div>
+          <div class="chart-box h-260"><canvas id="chartEngagement"></canvas></div>
+        </div>
+        <div>
+          <div class="mini-title">댓글 집중도 (개 / 천 회)</div>
+          <div class="chart-box h-260"><canvas id="chartDiscussion"></canvas></div>
+        </div>
+      </div>
+      <p style="margin:16px 0 0; font-size:12.5px; color:var(--text-secondary);"><strong style="color:var(--mg-ink)">머니그라피</strong>와 <strong style="color:var(--eo-ink)">EO</strong>는 조회수 규모는 작지만 두 지표 모두 상위권 — 팬덤이 아닌 <strong style="color:var(--text-primary)">공론장형 커뮤니티</strong>가 형성돼 있다.</p>
+    </div>
+  </section>
+
+  <!-- ===== Chart 3 : Bubble ===== -->
+  <section id="ch04">
+    <div class="section-head">
+      <h2><span class="chapter-tag">CH.04</span>영상 길이 × 조회수 × 댓글 규모</h2>
+      <span class="hint">버블 크기 = 영상 1편당 평균 댓글 수</span>
+    </div>
+    <div class="card">
+      <div class="chart-box h-320"><canvas id="chartBubble"></canvas></div>
+      <div class="legend-row" id="bubbleLegend"></div>
+    </div>
+  </section>
+
+  <!-- ===== Channel Cards : Representative videos ===== -->
+  <section id="ch05">
+    <div class="section-head">
+      <h2><span class="chapter-tag">CH.05</span>채널별 대표 영상 & 시청자 반응</h2>
+      <span class="hint">영상 1편으로 보는 채널의 반응 패턴</span>
+    </div>
+
+    <div class="notice-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      <div><strong>실제 영상으로 교체 완료 —</strong> 제공된 5개 링크를 모두 직접 열어 채널·제목·구독자·조회수를 확인했습니다. 아래 인용구는 각 영상 상위 댓글 중 2건을 그대로 옮긴 <strong>실제 댓글</strong>이지만, 전체 댓글을 정량 분석한 긍정/부정 비율은 아니므로 감성 퍼센트 표기는 제거하고 조회수·댓글 수로 대체했습니다.</div>
+    </div>
+
+    <div class="channel-grid">
+      <article class="channel-card" id="mg" style="--accent:var(--mg-fill); --accent-ink:var(--mg-ink); --accent-soft:var(--mg-soft);">
+        <div class="cc-head">
+          <span class="dot"></span>
+          <div>
+            <h3>머니그라피 <span class="cc-en">Moneygraphy</span></h3>
+            <span class="cc-format">토스 브랜드 미디어 · 토크쇼</span>
+          </div>
+        </div>
+        <p class="cc-desc">금융 브랜드 토스가 운영하는 오리지널 미디어. 재테크 정보를 넘어 음악·패션·서브컬처와 결합된 소비 문화를 다루며 2030 세대의 폭발적인 팬덤과 공감대를 형성한다.</p>
+        <div class="cc-video">
+          <span class="cc-video-label">대표 분석 영상 · 머니 코드</span>
+          <h4>"내 세대에서 끝났다" 더콰이엇이 말하는 힙합의 본질, 그럼에도 그가 멈추지 않는 이유</h4>
+          <p class="cc-video-desc">국힙 1세대를 대표하는 더콰이엇과의 심층 인터뷰. 힙합 신의 역사와 음악에 대한 태도를 1시간에 걸쳐 풀어낸 머니 코드 시리즈 에피소드.</p>
+        </div>
+        <div class="cc-stats">
+          <span>조회수 <b>100만회</b></span>
+          <span>구독자 <b>87.8만</b></span>
+          <span>댓글 <b>1,856개</b></span>
+          <span>업로드 <b>2년 전</b></span>
+        </div>
+        <ul class="cc-quotes">
+          <li>"더콰 역대급 인터뷰라고 말하고싶네요. 언제든, 갈피를 못 잡을 때 종종 찾아보고 싶을 정도로..."</li>
+          <li>"넋이 나갈 정도로 멋있다"</li>
+        </ul>
+        <div class="cc-tags"><span>#머니코드</span><span>#더콰이엇</span><span>#국힙에볼루션</span><span>#인터뷰</span></div>
+        <a class="cc-cta link" href="https://youtu.be/omUVIKIq1FY" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube에서 보기 ↗
+        </a>
+      </article>
+
+      <article class="channel-card" id="eo" style="--accent:var(--eo-fill); --accent-ink:var(--eo-ink); --accent-soft:var(--eo-soft);">
+        <div class="cc-head">
+          <span class="dot"></span>
+          <div>
+            <h3>EO <span class="cc-en">이오</span></h3>
+            <span class="cc-format">스타트업 전문 미디어 · 창업가 인터뷰</span>
+          </div>
+        </div>
+        <p class="cc-desc">창업가·기획자·개발자의 성공과 실패를 고품질 다큐멘터리·인터뷰 포맷으로 전달. B2B·스타트업 업계 종사자의 커리어·비즈니스 몰입도가 매우 높다.</p>
+        <div class="cc-video">
+          <span class="cc-video-label">대표 분석 영상</span>
+          <h4>실패하고 싶지 않은 창업자를 위한 조언</h4>
+          <p class="cc-video-desc">인포뱅크·이오스튜디오·컴패노이드랩스·파인드어스가 함께한 초기 창업 액셀러레이팅 프로그램 '99°C'를 소개하며 창업 조언을 전하는 인터뷰.</p>
+        </div>
+        <div class="cc-stats">
+          <span>조회수 <b>15만회</b></span>
+          <span>구독자 <b>77.2만</b></span>
+          <span>업로드 <b>4년 전</b></span>
+        </div>
+        <ul class="cc-quotes">
+          <li>"스타트업 준비중인데 이오에서 많은 정보 얻고있습니다. 이 댓글이 성지글이 되어 나중에 직접 이오에 나와 인터뷰하는 날이 오길 꿈꿉니다"</li>
+          <li>"좋은 말씀들 감사합니다. 미국과 한국 스타트업 생태계의 마인드 차이가 인상적이네요"</li>
+        </ul>
+        <div class="cc-tags"><span>#창업조언</span><span>#액셀러레이팅</span><span>#99도씨</span><span>#스타트업생태계</span></div>
+        <a class="cc-cta link" href="https://youtu.be/MLjFjtVJqVc" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube에서 보기 ↗
+        </a>
+      </article>
+
+      <article class="channel-card" id="sf" style="--accent:var(--sf-fill); --accent-ink:var(--sf-ink); --accent-soft:var(--sf-soft);">
+        <div class="cc-head">
+          <span class="dot"></span>
+          <div>
+            <h3>삼프로TV</h3>
+            <span class="cc-format">증권·경제 전문 미디어 · 라이브·다작</span>
+          </div>
+        </div>
+        <p class="cc-desc">정통 금융·증권·자산시장 분석의 대명사. 매일 여러 편의 라이브 및 숏·롱폼을 쏟아내는 다작 구조로, 실시간 시황 업데이트에 최적화돼 있다.</p>
+        <div class="cc-video">
+          <span class="cc-video-label">대표 분석 영상 · 주말 인터뷰</span>
+          <h4>금리 인상인데 악재 끝? 오히려 지금이 기회라고 말하는 이유 | 박병창 MP파트너스 대표</h4>
+          <p class="cc-video-desc">MP파트너스 박병창 대표가 금리 인상 국면에서의 투자 전략과 시장 대응법을 짚어주는 주말 인터뷰 시리즈.</p>
+        </div>
+        <div class="cc-stats">
+          <span>조회수 <b>31만회</b></span>
+          <span>구독자 <b>304만</b></span>
+          <span>업로드 <b>3일 전</b></span>
+        </div>
+        <ul class="cc-quotes">
+          <li>"주식에서 부를 이루기에 가져야하는 마음 전략을 박병창 대표님 통해서 또한번 배웁니다. 바람에 흔들려도 그또한 지나갈테니까"</li>
+          <li>"어려운 시장, 박병창대표님 분석이 큰 도움이 됩니다"</li>
+        </ul>
+        <div class="cc-tags"><span>#금리인상</span><span>#주말인터뷰</span><span>#박병창</span><span>#투자전략</span></div>
+        <a class="cc-cta link" href="https://youtu.be/-rdWdJl-REE" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube에서 보기 ↗
+        </a>
+      </article>
+
+      <article class="channel-card" id="sk" style="--accent:var(--sk-fill); --accent-ink:var(--sk-ink); --accent-soft:var(--sk-soft);">
+        <div class="cc-head">
+          <span class="dot"></span>
+          <div>
+            <h3>슈카월드</h3>
+            <span class="cc-format">1인 지식 크리에이터 · 라이브 팟캐스트</span>
+          </div>
+        </div>
+        <p class="cc-desc">슈카 1인 진행 기반의 라이브 편집본. 시사·경제·역사·기술 트렌드를 유머러스하고 쉬운 입담으로 풀어내어 40분 이상의 롱폼에도 강력한 몰입감을 준다.</p>
+        <div class="cc-video">
+          <span class="cc-video-label">대표 분석 영상</span>
+          <h4>인텔의 반도체 제조 항복선언? 삼성전자와 TSMC의 사활을 건 승부</h4>
+          <p class="cc-video-desc">인텔의 반도체 제조 위기와 삼성전자·TSMC의 경쟁 구도를 쉽고 유쾌하게 풀어낸 경제·시사 토크방송.</p>
+        </div>
+        <div class="cc-stats">
+          <span>조회수 <b>58만회</b></span>
+          <span>구독자 <b>373만</b></span>
+          <span>업로드 <b>6년 전</b></span>
+        </div>
+        <ul class="cc-quotes">
+          <li>"제가 댓글 이런거 거의 안 하는데, 이거는 그냥 지나갈 수가 없네요... 슈카 님 정말 최고입니다"</li>
+          <li>"인텔은 그 전부터 위태위태 했는데, 이번에 회사 문제가 확 드러난 것 같아요. 제조 쪽으로는 삼성이나 TSMC를 따라잡기는 힘들듯 합니다"</li>
+        </ul>
+        <div class="cc-tags"><span>#반도체전쟁</span><span>#인텔</span><span>#삼성전자</span><span>#TSMC</span></div>
+        <a class="cc-cta link" href="https://youtu.be/8TXB8u2rI98" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube에서 보기 ↗
+        </a>
+      </article>
+
+      <article class="channel-card" id="f14" style="--accent:var(--f14-fill); --accent-ink:var(--f14-ink); --accent-soft:var(--f14-soft);">
+        <div class="cc-head">
+          <span class="dot"></span>
+          <div>
+            <h3>14F <span class="cc-en">일사에프</span></h3>
+            <span class="cc-format">MBC 레거시 미디어 · 숏·미디엄폼</span>
+          </div>
+        </div>
+        <p class="cc-desc">MBC 뉴미디어 브랜드. 10분 내외의 미디엄폼·쇼츠로 뉴스·트렌드·직장인 이슈(아이돈케어 등)를 압축 전달하는 레거시 미디어의 성공적 변신 사례.</p>
+        <div class="cc-video">
+          <span class="cc-video-label">대표 분석 영상 · 아이돈케어</span>
+          <h4>월급의 몇%를 저축하고 있나요? 사회 초년생 월급관리 10분 정리!</h4>
+          <p class="cc-video-desc">사회초년생의 실제 월급·지출 내역을 표로 정리해 저축·지출 계획을 10분 안에 짚어주는 아이돈케어 시리즈 콘텐츠.</p>
+        </div>
+        <div class="cc-stats">
+          <span>조회수 <b>95만회</b></span>
+          <span>구독자 <b>239만</b></span>
+          <span>댓글 <b>599개</b></span>
+          <span>업로드 <b>6년 전</b></span>
+        </div>
+        <ul class="cc-quotes">
+          <li>"언니 감사해요. 저 언니 알고 나서 지출 최소 30만원은 줄였어요"</li>
+          <li>"이런거 보면... 이십대 초반 사회초년생분들에게 너무너무 도움될거같아요"</li>
+        </ul>
+        <div class="cc-tags"><span>#아이돈케어</span><span>#월급관리</span><span>#사회초년생</span><span>#돈버는법</span></div>
+        <a class="cc-cta link" href="https://youtu.be/kQZSeJXq7lE" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube에서 보기 ↗
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== Chart 4 : Productivity ===== -->
+  <section id="ch06">
+    <div class="section-head">
+      <h2><span class="chapter-tag">CH.06</span>월간 생산성 vs 1분당 조회수 효율</h2>
+      <span class="hint">업로드량이 곧 효율은 아니다</span>
+    </div>
+    <div class="card">
+      <div class="split-2">
+        <div>
+          <div class="mini-title">월간 업로드 수 (편)</div>
+          <div class="chart-box h-260"><canvas id="chartUploads"></canvas></div>
+        </div>
+        <div>
+          <div class="mini-title">1분당 조회수 효율 (만 회/분)</div>
+          <div class="chart-box h-260"><canvas id="chartEfficiency"></canvas></div>
+        </div>
+      </div>
+      <p style="margin:16px 0 0; font-size:12.5px; color:var(--text-secondary)"><strong style="color:var(--sf-ink)">삼프로TV</strong>는 업로드량 1위지만 효율은 최하위, <strong style="color:var(--sk-ink)">슈카월드</strong>는 롱폼임에도 효율 1위 — 리소스가 분산될수록 편당 몰입도는 떨어진다.</p>
+    </div>
+  </section>
+
+  <!-- ===== Deep-dive : 20-factor framework ===== -->
+  <section id="ch07">
+    <div class="section-head">
+      <h2><span class="chapter-tag">CH.07</span>20요소 심층 진단</h2>
+      <span class="hint">채널명을 눌러 5개 영역 · 20개 항목을 펼쳐보세요</span>
+    </div>
+    <p class="deepdive-note">구독자·조회수·댓글 수·인용 댓글은 각 대표 영상 페이지에서 직접 확인한 실측치입니다. Engagement Rate·댓글 집중도·분당 효율은 이 대시보드 전반에서 사용해 온 예시 데이터셋 수치를 그대로 적용했으며, CTR·수익 구조 세부 비율·커뮤니티 탭 활용 빈도처럼 비공개 애널리틱스 영역은 공개 정보에 기반한 정성적 추정으로 표기했습니다.</p>
+    <div class="deepdive-list">
+      <details class="deepdive-card" style="--accent:var(--mg-fill); --accent-ink:var(--mg-ink);">
+        <summary><span class="dot" style="background:var(--mg-fill)"></span>머니그라피 <span class="cc-en">Moneygraphy</span>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="deepdive-body" data-channel="mg"></div>
+      </details>
+
+      <details class="deepdive-card" style="--accent:var(--eo-fill); --accent-ink:var(--eo-ink);">
+        <summary><span class="dot" style="background:var(--eo-fill)"></span>EO <span class="cc-en">이오</span>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="deepdive-body" data-channel="eo"></div>
+      </details>
+
+      <details class="deepdive-card" style="--accent:var(--sf-fill); --accent-ink:var(--sf-ink);">
+        <summary><span class="dot" style="background:var(--sf-fill)"></span>삼프로TV
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="deepdive-body" data-channel="sf"></div>
+      </details>
+
+      <details class="deepdive-card" style="--accent:var(--sk-fill); --accent-ink:var(--sk-ink);">
+        <summary><span class="dot" style="background:var(--sk-fill)"></span>슈카월드
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="deepdive-body" data-channel="sk"></div>
+      </details>
+
+      <details class="deepdive-card" style="--accent:var(--f14-fill); --accent-ink:var(--f14-ink);">
+        <summary><span class="dot" style="background:var(--f14-fill)"></span>14F <span class="cc-en">일사에프</span>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="deepdive-body" data-channel="f14"></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ===== Raw data table ===== -->
+  <section>
+    <details class="table-card">
+      <summary>전체 데이터 표 보기
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="table-scroll">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>채널</th>
+              <th>구독자</th>
+              <th>평균 조회수</th>
+              <th>월 업로드</th>
+              <th>Engagement</th>
+              <th>댓글 집중도</th>
+              <th>분당 효율</th>
+              <th>평균 영상 길이</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== Insights ===== -->
+  <section>
+    <div class="section-head"><h2>핵심 발견</h2></div>
+    <div class="insight-list">
+      <div class="insight-item">
+        <span class="insight-num">01</span>
+        <div>
+          <h4>브랜디드 미디어의 반란 — 머니그라피</h4>
+          <p>구독자 수는 5개 채널 중 4위(52만)에 그치지만 <strong>Engagement Rate(3.82%)와 댓글 집중도(8.54개/천회)는 전체 1위</strong>. 토스의 일방적 홍보 대신 소비·컬처 트렌드를 다루며, 시청자가 댓글창에서 자신의 소비 경험을 공유하는 공론장 역할을 수행한다.</p>
+        </div>
+      </div>
+      <div class="insight-item">
+        <span class="insight-num">02</span>
+        <div>
+          <h4>다작 전략의 한계 — 삼프로TV</h4>
+          <p>월 145편이라는 압도적 생산량으로 누적 조회수는 높지만, <strong>개별 영상 반응률(1.15%)과 분당 효율(0.24만/분)은 5개 채널 중 가장 낮다.</strong> 리소스가 파편화되며 시청자 집중도가 분산되는 경향을 보인다.</p>
+        </div>
+      </div>
+      <div class="insight-item">
+        <span class="insight-num">03</span>
+        <div>
+          <h4>1인 미디어 팬덤의 파워 — 슈카월드</h4>
+          <p>평균 40분이 넘는 롱폼임에도 <strong>분당 조회수 효율 1위(2.12만/분)</strong>를 기록. 단일 출연진 중심의 강력한 시청 유지력이 영상 길이의 불리함을 상쇄한다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-card">
+        <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>뉴미디어 제작사에게</h4>
+        <p>조회수만 노린 짧은 영상보다, 시청자가 댓글을 남길 여지를 주는 <strong style="color:var(--text-primary)">참여형 컬처 포맷</strong>(머니그라피 모델) 도입을 검토할 것.</p>
+      </div>
+      <div class="action-card">
+        <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18.7 8l-5.1 5.1-4-4L3 15.5"/></svg>기업 브랜디드 채널에게</h4>
+        <p>브랜드 노출을 줄이고 타깃 세대의 관심사(소비, 재테크, 컬처)를 다루어 <strong style="color:var(--text-primary)">댓글 집중도를 최우선 KPI</strong>로 설정할 것.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>데이터: 최근 90일 업로드 및 채널 누적 기준 · 분석 목적의 참고 자료</span>
+    <span>영상 길이·1편당 댓글 수는 분당 효율·댓글 집중도 지표로부터 환산</span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  var CHANNELS = [
+    { key: 'mg',  name: '머니그라피', fill: 'mg-fill',  ink: 'mg-ink',
+      subs: 52,  views: 38.5, uploads: 8,   eng: 3.82, disc: 8.54, eff: 1.28 },
+    { key: 'eo',  name: 'EO',        fill: 'eo-fill',  ink: 'eo-ink',
+      subs: 68,  views: 18.2, uploads: 10,  eng: 3.45, disc: 4.21, eff: 0.91 },
+    { key: 'sf',  name: '삼프로TV',   fill: 'sf-fill',  ink: 'sf-ink',
+      subs: 245, views: 8.4,  uploads: 145, eng: 1.15, disc: 2.10, eff: 0.24 },
+    { key: 'sk',  name: '슈카월드',   fill: 'sk-fill',  ink: 'sk-ink',
+      subs: 332, views: 85.1, uploads: 12,  eng: 2.98, disc: 6.80, eff: 2.12 },
+    { key: 'f14', name: '14F',       fill: 'f14-fill', ink: 'f14-ink',
+      subs: 178, views: 12.3, uploads: 45,  eng: 1.85, disc: 2.45, eff: 1.53 }
+  ];
+
+  CHANNELS.forEach(function (c) {
+    c.fillColor = cssVar('--' + c.fill);
+    c.inkColor = cssVar('--' + c.ink);
+    c.lengthMin = Math.round((c.views / c.eff) * 10) / 10;      // 만회 / (만회/분) = 분
+    c.commentsPerVideo = Math.round(c.disc * c.views * 10) / 10; // (개/천회) * (조회수/천)
+  });
+
+  var textPrimary = cssVar('--text-primary');
+  var textSecondary = cssVar('--text-secondary');
+  var gridLine = cssVar('--grid-line');
+  var surface = cssVar('--surface');
+
+  Chart.defaults.font.family = "'Noto Sans KR', sans-serif";
+  Chart.defaults.color = textSecondary;
+  Chart.defaults.borderColor = gridLine;
+
+  function baseScales(xLabel) {
+    return {
+      x: {
+        beginAtZero: true,
+        grid: { color: gridLine, drawTicks: false },
+        border: { display: false },
+        ticks: { font: { size: 11 } }
+      },
+      y: {
+        grid: { display: false },
+        border: { display: false },
+        ticks: { font: { size: 11.5, weight: '600' }, color: textPrimary }
+      }
+    };
+  }
+
+  function hBarChart(id, valueKey, opts) {
+    opts = opts || {};
+    var sorted = CHANNELS.slice().sort(function (a, b) { return b[valueKey] - a[valueKey]; });
+    var ctx = document.getElementById(id);
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(function (c) { return c.name; }),
+        datasets: [{
+          data: sorted.map(function (c) { return c[valueKey]; }),
+          backgroundColor: sorted.map(function (c) { return c.fillColor; }),
+          borderRadius: 5,
+          borderSkipped: false,
+          maxBarThickness: 26
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { right: 34 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: surface, titleColor: textPrimary, bodyColor: textPrimary,
+            borderColor: gridLine, borderWidth: 1, padding: 10, displayColors: false,
+            callbacks: {
+              label: function (item) { return (opts.tooltipPrefix || '') + item.formattedValue + (opts.unit || ''); }
+            }
+          },
+          datalabels: null
+        },
+        scales: baseScales()
+      },
+      plugins: [{
+        id: id + '-labels',
+        afterDatasetsDraw: function (chart) {
+          var ctx2 = chart.ctx;
+          ctx2.save();
+          ctx2.font = "600 11.5px 'IBM Plex Mono', monospace";
+          ctx2.fillStyle = textPrimary;
+          ctx2.textBaseline = 'middle';
+          chart.getDatasetMeta(0).data.forEach(function (bar, i) {
+            var val = sorted[i][valueKey];
+            var label = (opts.format ? opts.format(val) : val) + (opts.unit || '');
+            ctx2.fillText(label, bar.x + 6, bar.y);
+          });
+          ctx2.restore();
+        }
+      }]
+    });
+  }
+
+  hBarChart('chartSubs', 'subs', { unit: '만' });
+  hBarChart('chartViews', 'views', { unit: '만' });
+  hBarChart('chartEngagement', 'eng', { unit: '%' });
+  hBarChart('chartDiscussion', 'disc', { unit: '개' });
+  hBarChart('chartUploads', 'uploads', { unit: '편' });
+  hBarChart('chartEfficiency', 'eff', { unit: '만' });
+
+  // ---- Bubble chart ----
+  var bubbleCtx = document.getElementById('chartBubble');
+  if (bubbleCtx) {
+    var maxComments = Math.max.apply(null, CHANNELS.map(function (c) { return c.commentsPerVideo; }));
+    new Chart(bubbleCtx, {
+      type: 'bubble',
+      data: {
+        datasets: CHANNELS.map(function (c) {
+          return {
+            label: c.name,
+            data: [{ x: c.lengthMin, y: c.views, r: 8 + (c.commentsPerVideo / maxComments) * 34 }],
+            backgroundColor: c.fillColor + 'CC',
+            borderColor: c.fillColor,
+            borderWidth: 1.5
+          };
+        })
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: surface, titleColor: textPrimary, bodyColor: textPrimary,
+            borderColor: gridLine, borderWidth: 1, padding: 10,
+            callbacks: {
+              title: function (items) { return CHANNELS[items[0].datasetIndex].name; },
+              label: function (item) {
+                var c = CHANNELS[item.datasetIndex];
+                return ['영상 길이: ' + c.lengthMin + '분', '평균 조회수: ' + c.views + '만 회', '편당 댓글: ' + c.commentsPerVideo + '개'];
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: '평균 영상 길이 (분)', color: textSecondary, font: { size: 11.5 } },
+            grid: { color: gridLine }, border: { display: false }, min: 0, max: 48,
+            ticks: { font: { size: 11 } }
+          },
+          y: {
+            title: { display: true, text: '평균 조회수 (만 회)', color: textSecondary, font: { size: 11.5 } },
+            grid: { color: gridLine }, border: { display: false }, min: 0, max: 100,
+            ticks: { font: { size: 11 } }
+          }
+        }
+      }
+    });
+
+    var legendWrap = document.getElementById('bubbleLegend');
+    CHANNELS.forEach(function (c) {
+      var item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = '<span class="dot" style="background:' + c.fillColor + '"></span>' + c.name;
+      legendWrap.appendChild(item);
+    });
+  }
+
+  // ---- Data table ----
+  var tbody = document.querySelector('#dataTable tbody');
+  var best = {
+    subs: Math.max.apply(null, CHANNELS.map(function (c) { return c.subs; })),
+    views: Math.max.apply(null, CHANNELS.map(function (c) { return c.views; })),
+    uploads: Math.max.apply(null, CHANNELS.map(function (c) { return c.uploads; })),
+    eng: Math.max.apply(null, CHANNELS.map(function (c) { return c.eng; })),
+    disc: Math.max.apply(null, CHANNELS.map(function (c) { return c.disc; })),
+    eff: Math.max.apply(null, CHANNELS.map(function (c) { return c.eff; }))
+  };
+  CHANNELS.forEach(function (c) {
+    var tr = document.createElement('tr');
+    function cell(key, val, suffix) {
+      var cls = c[key] === best[key] ? 'best' : '';
+      return '<td class="num ' + cls + '">' + val + (suffix || '') + '</td>';
+    }
+    tr.innerHTML =
+      '<td class="channel-cell"><span class="dot" style="background:' + c.fillColor + '"></span>' + c.name + '</td>' +
+      cell('subs', c.subs, '만') +
+      cell('views', c.views, '만') +
+      cell('uploads', c.uploads, '편') +
+      cell('eng', c.eng, '%') +
+      cell('disc', c.disc, '개') +
+      cell('eff', c.eff, '만') +
+      '<td class="num">' + c.lengthMin + '분</td>';
+    tbody.appendChild(tr);
+  });
+
+  // ---- 20-factor deep dive ----
+  var DEEPDIVE = {
+    mg: [
+      { title: '1. 채널 정체성 및 타깃', fields: [
+        { k: '포지셔닝 및 UVP', v: '금융 앱 브랜드가 만드는 컬처 미디어 — 재테크 정보가 아니라 소비·서브컬처를 데이터로 해부하는 것이 차별점.' },
+        { k: '핵심 페르소나', v: '20~30대 트렌드 민감층. 투자보다 소비·라이프스타일에 관심이 큰 "금융에 무관심한 2030"을 역설적으로 끌어들임.' },
+        { k: '운영 주체 및 캐릭터 파워', v: '토스(비바리퍼블리카) 브랜드 미디어. 고정 MC 없이 매 에피소드 게스트(더콰이엇 등) 중심이라 팬덤은 브랜드·시리즈 단위로 형성.' },
+        { k: '시청 맥락', v: '출퇴근·자기 전 유튜브 서핑 중 알고리즘 추천으로 유입되는 발견형 시청이 중심. 정보 탐색보다 몰입형 콘텐츠 소비에 가깝다.' }
+      ]},
+      { title: '2. 콘텐츠 포맷 및 기획', fields: [
+        { k: '메인 콘텐츠 포맷', v: '스튜디오 토크쇼 + 인터뷰 다큐 하이브리드. 데이터 그래픽과 감성적 편집을 결합해 브랜드 무드를 강하게 드러낸다.' },
+        { k: '킬러 코너 및 시리즈', v: '"머니 코드", "B의 통장", "토킹 헤즈" 등 인터뷰이 조합형 시리즈 IP를 다수 운영 — 회차마다 새 게스트로 확장성 확보.' },
+        { k: '영상 길이 및 폼팩터', v: '대표 영상 기준 1시간 안팎의 롱폼 인터뷰가 메인. 쇼츠는 하이라이트 클립 용도로 보조적으로 운영.' },
+        { k: '업로드 주기', v: '월 8편 내외(예시 데이터셋)로 소수 정예 기획형 편성 — 삼프로TV 대비 1/18 수준의 물량.' }
+      ]},
+      { title: '3. 정량적 성과 및 데이터', fields: [
+        { k: '규모 지표', v: '구독자 87.8만 명(대표 영상 페이지 실측) · 대표 영상 조회수 100만 회.' },
+        { k: 'Engagement Rate', v: '3.82%(예시 데이터셋) — 5채널 중 1위.' },
+        { k: '댓글 집중도', v: '8.54개/천회(예시 데이터셋) — 5채널 중 1위.' },
+        { k: '알고리즘 노출 지표', v: 'CTR·SEO 세부 지표는 비공개 애널리틱스 영역이라 확인 불가. 인물명 중심 제목이 검색 유입에 유리한 구조로 추정.' }
+      ]},
+      { title: '4. 시청자 반응 및 커뮤니티', fields: [
+        { k: '댓글 감성 분석', v: '실제 상위 댓글은 인터뷰이에 대한 존경·감탄이 압도적. 전수 분석 전까지 정량 비율은 추정치로만 제시 가능.' },
+        { k: '공론장 및 2차 생산', v: '댓글창에서 시청자가 자신의 과거 경험(신촌 언더그라운드 시절 등)을 길게 공유 — 콘텐츠가 개인 서사의 트리거로 작동.' },
+        { k: '커뮤니티 탭 활용도', v: '비공개 지표. 채널 성격상 시리즈 예고·게스트 힌트 공유 용도로 쓰일 가능성이 높다(추정).' }
+      ]},
+      { title: '5. 비즈니스 및 지속가능성', fields: [
+        { k: '수익화 모델', v: '토스 앱 생태계 홍보가 핵심 목적인 브랜디드 미디어로 알려짐 — 직접 광고 수익보다 브랜드 인지·앱 유입이 KPI일 가능성(추정).' },
+        { k: '브랜드 연계성 및 확장성', v: '인터뷰이 풀이 음악·컬처 업계로 넓어 오프라인 행사·컬래버레이션 확장 여지가 크다.' },
+        { k: '경쟁 채널 대비 차별점', v: '"금융 앱이 만드는 컬처 콘텐츠"라는 독자 포지션 — 정보 밀도보다 편집·연출 퀄리티로 경쟁.' },
+        { k: '리스크 및 지속가능성', v: '게스트 섭외 의존도가 높아 소재 고갈 리스크가 있고, 모기업 마케팅 전략 변화에 따라 편성이 흔들릴 수 있음.' }
+      ]}
+    ],
+    eo: [
+      { title: '1. 채널 정체성 및 타깃', fields: [
+        { k: '포지셔닝 및 UVP', v: '국내 대표 스타트업 전문 미디어 — 창업가의 날것 서사를 다큐멘터리급 퀄리티로 전달하는 것이 UVP.' },
+        { k: '핵심 페르소나', v: '예비 창업가·현직 스타트업 종사자·VC 등 B2B 성격이 강한 시청자층.' },
+        { k: '운영 주체 및 캐릭터 파워', v: '미디어 스타트업 EO가 직접 운영. 고정 MC보다 인터뷰이(창업가) 개인의 서사가 팬덤을 이끈다.' },
+        { k: '시청 맥락', v: '출근 전·이동 중 학습 목적 시청이 많을 것으로 추정 — "조언/교훈"형 제목이 검색·저장 니즈를 자극.' }
+      ]},
+      { title: '2. 콘텐츠 포맷 및 기획', fields: [
+        { k: '메인 콘텐츠 포맷', v: '인터뷰 다큐멘터리. 자막과 정제된 스튜디오 촬영으로 신뢰도 높은 톤앤매너를 유지.' },
+        { k: '킬러 코너 및 시리즈', v: '창업가 인터뷰 외 액셀러레이팅 프로그램 소개 등 스타트업 생태계 밀착형 코너를 운영.' },
+        { k: '영상 길이 및 폼팩터', v: '15~25분 내외의 미디엄~롱폼 인터뷰 중심. 정보 밀도를 위해 편집으로 압축하는 편.' },
+        { k: '업로드 주기', v: '월 10편 내외(예시 데이터셋) — 소수 정예형 편성으로 머니그라피와 유사한 카테고리.' }
+      ]},
+      { title: '3. 정량적 성과 및 데이터', fields: [
+        { k: '규모 지표', v: '구독자 77.2만 명(대표 영상 페이지 실측) · 대표 영상 조회수 15만 회.' },
+        { k: 'Engagement Rate', v: '3.45%(예시 데이터셋) — 5채널 중 2위.' },
+        { k: '댓글 집중도', v: '4.21개/천회(예시 데이터셋) — 5채널 중 3위.' },
+        { k: '알고리즘 노출 지표', v: 'CTR 비공개. 인터뷰이 실명이 제목에 들어가는 경우 검색 유입에 강점이 있을 것으로 추정.' }
+      ]},
+      { title: '4. 시청자 반응 및 커뮤니티', fields: [
+        { k: '댓글 감성 분석', v: '실제 상위 댓글은 감사·동기부여 표현이 다수 — "나중에 직접 인터뷰이로 나오고 싶다"는 롤모델 지향적 반응이 관찰됨.' },
+        { k: '공론장 및 2차 생산', v: '스타트업 준비생들이 자신의 상황을 댓글로 공유하며 서로 응원하는 커뮤니티적 반응이 나타남.' },
+        { k: '커뮤니티 탭 활용도', v: '비공개 지표. 업계 특성상 채용 공고·세미나 홍보 용도로 활용될 가능성(추정).' }
+      ]},
+      { title: '5. 비즈니스 및 지속가능성', fields: [
+        { k: '수익화 모델', v: '브랜디드 콘텐츠(기업 인터뷰 협찬), 컨설팅·리서치 연계 사업으로 다각화된 것으로 알려짐.' },
+        { k: '브랜드 연계성 및 확장성', v: '스타트업 리포트·컨퍼런스 등 오프라인 IP로 확장 가능성이 높은 구조.' },
+        { k: '경쟁 채널 대비 차별점', v: '카테고리 내 유일하게 "B2B 인터뷰 다큐" 포지션을 선점 — 일반 경제 채널과 겹치지 않는 니치.' },
+        { k: '리스크 및 지속가능성', v: '인터뷰이(창업가) 풀이 한정적이라 소재 고갈 가능성이 있고, 스타트업 붐-침체 사이클에 따라 화제성이 변동될 수 있음.' }
+      ]}
+    ],
+    sf: [
+      { title: '1. 채널 정체성 및 타깃', fields: [
+        { k: '포지셔닝 및 UVP', v: '정통 증권·경제 정보 채널의 대명사 — "방송사 없는 경제 방송국"을 표방하는 매체형 채널.' },
+        { k: '핵심 페르소나', v: '실전 투자자·직장인 재테크족. 즉시성 있는 시황 정보가 필요한 능동적 투자자층이 핵심.' },
+        { k: '운영 주체 및 캐릭터 파워', v: '다수의 고정 진행자(전업 경제 전문가) 체제. 특정 1인이 아닌 "패널 조합"이 브랜드 파워를 이룸.' },
+        { k: '시청 맥락', v: '출퇴근길·장 마감 후 등 실시간 정보 확인 목적의 습관적 시청이 중심 — 라디오 대체형 오디오 소비 비중이 높을 것으로 추정.' }
+      ]},
+      { title: '2. 콘텐츠 포맷 및 기획', fields: [
+        { k: '메인 콘텐츠 포맷', v: '스튜디오 라이브 토크 + 전문가 패널 대담. 편집보다 실시간성·정보량이 우선시되는 방송형 연출.' },
+        { k: '킬러 코너 및 시리즈', v: '"퇴근길 손에 잡히는 지식", "신과함께" 등 다수 고정 코너를 운영해 요일별 루틴 시청이 가능.' },
+        { k: '영상 길이 및 폼팩터', v: '코너별로 20분~1시간 이상까지 편차가 크며, 라이브 풀영상과 하이라이트 클립을 병행 업로드.' },
+        { k: '업로드 주기', v: '월 145편(예시 데이터셋) — 5채널 중 압도적 1위. 거의 매일 다건 업로드하는 방송사형 편성.' }
+      ]},
+      { title: '3. 정량적 성과 및 데이터', fields: [
+        { k: '규모 지표', v: '구독자 304만 명(대표 영상 페이지 실측) · 대표 영상(주말인터뷰) 조회수 31만 회.' },
+        { k: 'Engagement Rate', v: '1.15%(예시 데이터셋) — 5채널 중 최하위.' },
+        { k: '댓글 집중도', v: '2.10개/천회(예시 데이터셋) — 5채널 중 최하위.' },
+        { k: '알고리즘 노출 지표', v: 'CTR 비공개. 다작 구조상 개별 영상보다 구독·알림 기반 트래픽 비중이 클 것으로 추정.' }
+      ]},
+      { title: '4. 시청자 반응 및 커뮤니티', fields: [
+        { k: '댓글 감성 분석', v: '실제 상위 댓글은 출연 전문가에 대한 신뢰·감사가 우세하나, 시황 예측이 빗나갈 경우 비판·논쟁이 자주 발생하는 것으로 알려짐.' },
+        { k: '공론장 및 2차 생산', v: '패널 간 의견이 갈릴 때 시청자들이 댓글로 "팀 나누기" 토론을 벌이는 경우가 잦다.' },
+        { k: '커뮤니티 탭 활용도', v: '비공개 지표. 매일 업로드되는 방송 특성상 라이브 예고·시간표 공지 용도로 쓰일 가능성이 높다(추정).' }
+      ]},
+      { title: '5. 비즈니스 및 지속가능성', fields: [
+        { k: '수익화 모델', v: '광고 외 유료 강의(주식 클래스), 도서 출간, 유료 멤버십 등 다각화된 수익 구조를 갖춘 것으로 알려짐.' },
+        { k: '브랜드 연계성 및 확장성', v: '오프라인 강연·서적·투자 교육 사업으로 이미 상당히 확장된 상태 — 카테고리 내 가장 성숙한 IP 비즈니스.' },
+        { k: '경쟁 채널 대비 차별점', v: '패널 풀의 전문성과 물량(다작)이 압도적 — 정보의 "양"과 "신속성"에서 독보적 우위.' },
+        { k: '리스크 및 지속가능성', v: '다작 구조로 인한 개별 콘텐츠 완성도·반응률 희석이 확인되는 구조적 리스크. 특정 패널 의존도와 시황 예측 실패 시 신뢰도 타격 가능성도 존재.' }
+      ]}
+    ],
+    sk: [
+      { title: '1. 채널 정체성 및 타깃', fields: [
+        { k: '포지셔닝 및 UVP', v: '1인 크리에이터 기반 지식 팟캐스트 — 어려운 경제·시사를 유머와 비유로 쉽게 풀어내는 것이 핵심 UVP.' },
+        { k: '핵심 페르소나', v: '경제 초심자부터 마니아까지 폭넓은 대중층. "재미있게 배우고 싶은" 일반 시청자가 핵심.' },
+        { k: '운영 주체 및 캐릭터 파워', v: '슈카 개인의 입담과 지식이 브랜드 그 자체 — 카테고리 내 가장 강력한 1인 캐릭터 파워를 보유.' },
+        { k: '시청 맥락', v: '이동 중·운동 중 등 오디오 콘텐츠처럼 소비되는 경우가 많을 것으로 추정 — 긴 러닝타임에도 몰입 유지가 특징.' }
+      ]},
+      { title: '2. 콘텐츠 포맷 및 기획', fields: [
+        { k: '메인 콘텐츠 포맷', v: '라이브 스트리밍 편집본. 슈카 1인 진행 + 자료 화면 공유 중심의 담백한 연출.' },
+        { k: '킬러 코너 및 시리즈', v: '"슈카월드" 자체가 브랜드 IP화되어 특정 코너보다 매 회차 주제 선정력이 강점(반도체, 지정학 등 시의성 있는 소재).' },
+        { k: '영상 길이 및 폼팩터', v: '25분~1시간 이상의 롱폼이 메인. 대표 영상 기준 약 25분 내외로 카테고리 내에서도 긴 편.' },
+        { k: '업로드 주기', v: '월 12편 내외(예시 데이터셋)로 준수한 정기성을 유지.' }
+      ]},
+      { title: '3. 정량적 성과 및 데이터', fields: [
+        { k: '규모 지표', v: '구독자 373만 명(대표 영상 페이지 실측) — 5채널 중 최대 · 대표 영상 조회수 58만 회.' },
+        { k: 'Engagement Rate', v: '2.98%(예시 데이터셋) — 5채널 중 3위.' },
+        { k: '댓글 집중도', v: '6.80개/천회(예시 데이터셋) — 5채널 중 2위.' },
+        { k: '알고리즘 노출 지표', v: 'CTR 비공개. 슈카 개인 브랜드 인지도가 높아 검색·직접 유입 비중이 상대적으로 클 것으로 추정.' }
+      ]},
+      { title: '4. 시청자 반응 및 커뮤니티', fields: [
+        { k: '댓글 감성 분석', v: '실제 상위 댓글은 "슈카 최고", "귀중한 정보 감사"류의 강한 호감 표현이 압도적 — 팬덤형 충성도가 뚜렷하게 관찰됨.' },
+        { k: '공론장 및 2차 생산', v: '시청자가 슈카의 설명 방식·비유를 인용하며 추가 설명을 덧붙이는 "보충 댓글" 문화가 활발하다.' },
+        { k: '커뮤니티 탭 활용도', v: '비공개 지표. 1인 채널 특성상 개인 일정·방송 예고 공지 용도로 쓰일 가능성이 높다(추정).' }
+      ]},
+      { title: '5. 비즈니스 및 지속가능성', fields: [
+        { k: '수익화 모델', v: '슈퍼챗(라이브 후원), 광고, 강연·출판 등으로 다각화된 것으로 알려진 1인 크리에이터형 수익 구조.' },
+        { k: '브랜드 연계성 및 확장성', v: '"슈카월드" 자체가 이미 강력한 개인 IP로, 방송 출연·강연 등 유튜브 외 콘텐츠로 확장된 사례가 다수 알려져 있음.' },
+        { k: '경쟁 채널 대비 차별점', v: '동일 카테고리에서 유일하게 "1인 롱폼 입담"으로 승부하는 구조 — 편집·연출보다 진행자 개인기에 의존한 차별화.' },
+        { k: '리스크 및 지속가능성', v: '호스트(슈카) 개인에 대한 의존도가 절대적이라 개인 리스크(건강, 이슈, 번아웃)가 곧 채널 리스크로 직결되는 구조.' }
+      ]}
+    ],
+    f14: [
+      { title: '1. 채널 정체성 및 타깃', fields: [
+        { k: '포지셔닝 및 UVP', v: 'MBC라는 레거시 방송사가 운영하는 뉴미디어 브랜드 — 전통 저널리즘 신뢰도와 디지털 네이티브 포맷을 결합.' },
+        { k: '핵심 페르소나', v: '2030 직장인·사회초년생. 짧은 시간에 실용 정보를 얻고 싶은 바쁜 시청자층.' },
+        { k: '운영 주체 및 캐릭터 파워', v: 'MBC 소속 PD·아나운서 등 다수 출연진이 코너별로 순환 출연 — 특정 개인보다 "아이돈케어" 등 코너 브랜드가 팬덤을 이끈다.' },
+        { k: '시청 맥락', v: '출퇴근 지하철 등 자투리 시간 시청이 핵심 맥락 — 실제 댓글에서도 "출근길에 보기 좋다"는 반응이 확인됨.' }
+      ]},
+      { title: '2. 콘텐츠 포맷 및 기획', fields: [
+        { k: '메인 콘텐츠 포맷', v: '미디엄폼 정보성 콘텐츠 + 쇼츠. 인포그래픽·자막을 적극 활용한 압축 편집이 특징.' },
+        { k: '킬러 코너 및 시리즈', v: '"아이돈케어"(재테크) 등 MBC 산하 코너형 IP를 다수 운영 — 코너별로 별도 팬층을 보유.' },
+        { k: '영상 길이 및 폼팩터', v: '대표 영상 기준 약 9분 내외 — 5채널 중 가장 짧은 폼팩터로, 압축 정보 전달에 최적화.' },
+        { k: '업로드 주기', v: '월 45편 내외(예시 데이터셋)로 삼프로TV 다음으로 많은 업로드량 — 레거시 방송사 특유의 물량 대응력.' }
+      ]},
+      { title: '3. 정량적 성과 및 데이터', fields: [
+        { k: '규모 지표', v: '구독자 239만 명(대표 영상 페이지 실측) · 대표 영상 조회수 95만 회, 댓글 599개.' },
+        { k: 'Engagement Rate', v: '1.85%(예시 데이터셋) — 5채널 중 4위.' },
+        { k: '댓글 집중도', v: '2.45개/천회(예시 데이터셋) — 5채널 중 4위.' },
+        { k: '알고리즘 노출 지표', v: 'CTR 비공개. 실용 정보형 제목(예: "월급 250만원")이 검색·추천 알고리즘에 강점을 가질 것으로 추정.' }
+      ]},
+      { title: '4. 시청자 반응 및 커뮤니티', fields: [
+        { k: '댓글 감성 분석', v: '실제 상위 댓글은 "내 얘기 같다"는 강한 공감과 함께, 코너 운영 방식(재생목록 정리 등)에 대한 불만도 함께 관찰됨.' },
+        { k: '공론장 및 2차 생산', v: '시청자가 자신의 실제 월급·지출 내역을 댓글로 공유하며 비교하는 활발한 2차 생산이 나타남.' },
+        { k: '커뮤니티 탭 활용도', v: '비공개 지표. 방송사 산하 채널 특성상 관련 프로그램·이벤트 공지 용도로 쓰일 가능성이 높다(추정).' }
+      ]},
+      { title: '5. 비즈니스 및 지속가능성', fields: [
+        { k: '수익화 모델', v: 'MBC의 광고 수익 기반 운영으로 알려져 있으며, 커머스·멤버십보다는 방송 광고형 모델에 가까운 것으로 추정.' },
+        { k: '브랜드 연계성 및 확장성', v: 'MBC 본방송·타 디지털 채널과의 연계 편성이 용이해 레거시 미디어 IP 확장에 유리한 구조.' },
+        { k: '경쟁 채널 대비 차별점', v: '레거시 방송사의 자원(스튜디오, 인력, 신뢰도)을 활용하면서도 짧은 길이·밈적 편집 등 디지털 네이티브 문법을 구사하는 하이브리드 포지션.' },
+        { k: '리스크 및 지속가능성', v: '코너별 업로드 순서가 뒤섞여 있다는 실제 시청자 불만이 확인되는 등 운영·아카이빙 체계의 개선 여지가 있으며, 방송사 조직 특성상 의사결정 속도가 상대적으로 느릴 수 있음.' }
+      ]}
+    ]
+  };
+
+  Object.keys(DEEPDIVE).forEach(function (key) {
+    var body = document.querySelector('.deepdive-body[data-channel="' + key + '"]');
+    if (!body) return;
+    DEEPDIVE[key].forEach(function (area) {
+      var areaEl = document.createElement('div');
+      areaEl.className = 'deepdive-area';
+      var h4 = document.createElement('h4');
+      h4.textContent = area.title;
+      areaEl.appendChild(h4);
+      var grid = document.createElement('div');
+      grid.className = 'deepdive-grid';
+      area.fields.forEach(function (f) {
+        var field = document.createElement('div');
+        field.className = 'deepdive-field';
+        field.innerHTML = '<div class="k">' + f.k + '</div><div class="v">' + f.v + '</div>';
+        grid.appendChild(field);
+      });
+      areaEl.appendChild(grid);
+      body.appendChild(areaEl);
+    });
+  });
+
+  // ---- Section tabs: scroll-spy ----
+  var tabLinks = Array.prototype.slice.call(document.querySelectorAll('.channel-tabs .tab-pill'));
+  var tabSections = tabLinks
+    .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+    .filter(Boolean);
+  if ('IntersectionObserver' in window && tabSections.length) {
+    var setActive = function (id) {
+      tabLinks.forEach(function (l) {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+      });
+    };
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) setActive(entry.target.id);
+      });
+    }, { rootMargin: '-96px 0px -75% 0px', threshold: 0 });
+    tabSections.forEach(function (s) { observer.observe(s); });
+  }
+})();
+</script>
+
+</body></html>
